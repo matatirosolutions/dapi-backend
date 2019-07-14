@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+    <div class="row">
+        {% set cls = loggedIn ? 'col-md-8' : 'col-md-12' %}
+        <div class="{{ cls }}">
+            <div class="row">
+                <div class="col-12">
+                    <h2>Where our clients are</h2>
+                    <p>We've got clients from all across the US - see where they're from!</p>
+                    <div id="loading">
+                        <img alt="Loading..." src="/build/static/gears.svg">
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="StateChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            {% if loggedIn %}
+                <div class="row">
+                    <div class="col-12">
+                        <h2>Newest clients</h2>
+                        <p>Here are the newest clients to join our organisation.</p>
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th data-field="id">Client</th>
+                                <th data-field="name">Email</th>
+                                <th data-field="price">Phone</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for client in clients %}
+                                <tr>
+                                    <td>{{ client.First }} {{ client.Last }}</td>
+                                    <td>{{ client['Office Email'] }}</td>
+                                    <td>{{ client['Office Phone'] }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            {% if loggedIn %}
+                <h2>Image upload</h2>
+                <p>We love to get your files from you, pleasae upload all your best images!</p>
+                <form action="/file/upload" class="dropzone">
+                    <div class="fallback">
+                        <input name="file" type="file" multiple/>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('home') }}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('home') }}
+{% endblock %}
