@@ -8,7 +8,7 @@ class StateChart {
 
     initialiseData() {
         this.fetchData(this.receiveData.bind(this));
-      //  window.setInterval(this.refreshData.bind(this), 5000);
+        window.setInterval(this.refreshData.bind(this), 5000);
     }
 
     refreshData() {
@@ -17,7 +17,7 @@ class StateChart {
     }
 
     fetchData(successCallback) {
-        fetch('/chart/data/')
+        fetch('/chart/data')
             .then((response) => response.json())
             .then((resp) => {
                 successCallback(resp);
