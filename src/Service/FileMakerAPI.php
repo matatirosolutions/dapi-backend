@@ -79,7 +79,7 @@ class FileMakerAPI
         // documentation, with a 'contents' node containing the actual file data which we read off disk
         $options = [
             'headers' => [
-                'Authorization' => sprintf('Bearer %s', $this->getTokenFromSession()),
+                'Authorization' => sprintf('Bearer %s', $this->retrieveToken()),
             ],
             'multipart' => [
                 [
@@ -110,7 +110,7 @@ class FileMakerAPI
         $headers = [
             'headers' => [
                 'Content-Type' => 'application/json',
-                'Authorization' => sprintf('Bearer %s', $this->getTokenFromSession()),
+                'Authorization' => sprintf('Bearer %s', $this->retrieveToken()),
             ]
         ];
 
@@ -142,9 +142,8 @@ class FileMakerAPI
             // but sometimes you get 105 missing layout (go figure), so try a token refresh
             if (in_array($content->messages[0]->code, [105, 952]) && !$this->retried) {
                 $this->retried = true;
-                $this->forceTokenRefresh();
+                $this->clearToken();
                 return $this->performRequest($method, $uri, $options);
-
             }
             throw new Exception($content->messages[0]->message, $content->messages[0]->code);
         } catch (GuzzleException $e) {
@@ -180,7 +179,7 @@ class FileMakerAPI
             // The token is in response.token. We need to save that for future use. You could write it
             // to a file, but because we want this to be user-specific one good place to store it is
             // in the user's session
-            $this->saveTokenToSession($content->response->token);
+            $this->saveToken($content->response->token);
         } catch (Exception $exception) {
             // We need to catch any exceptions which occur and try and provide more useful feedback
             // The Data API uses standard HTTP responses (see https://httpstatuses.com/)
@@ -205,19 +204,11 @@ class FileMakerAPI
     }
 
     /**
-     *
-     */
-    private function forceTokenRefresh()
-    {
-        $this->session->set('fmToken', false);
-    }
-
-    /**
      * @return string
      *
      * @throws Exception
      */
-    private function getTokenFromSession()
+    private function retrieveToken()
     {
         $token = $this->session->get('fmToken');
 
@@ -232,9 +223,17 @@ class FileMakerAPI
     /**
      * @param string $token
      */
-    private function saveTokenToSession($token)
+    private function saveToken($token)
     {
         $this->session->set('fmToken', $token);
+    }
+
+    /**
+     *
+     */
+    private function clearToken()
+    {
+        $this->session->set('fmToken', false);
     }
 
     /**
