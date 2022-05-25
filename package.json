@@ -14,7 +14,7 @@
     },
     "dependencies": {
         "bootstrap": "^4.3.1",
-        "bootstrap-table": "^1.15.2",
+        "bootstrap-table": "^1.20.2",
         "chart.js": "^2.8.0",
         "copy-webpack-plugin": "^5.0.3",
         "dropzone": "^5.5.1",
